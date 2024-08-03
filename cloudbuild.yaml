@@ -11,11 +11,11 @@ steps:
 
   # Step 3: Apply the Cloud Deploy configurations
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['deploy', 'apply', '--file=clouddeploy.yaml', '--region=us-central1-a']
+    args: ['deploy', 'apply', '--file=clouddeploy.yaml', '--region=us-central1']
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['deploy', 'apply', '--file=dev-target.yaml', '--region=us-central1-a']
+    args: ['deploy', 'apply', '--file=dev-target.yaml', '--region=us-central1']
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['deploy', 'apply', '--file=prod-target.yaml', '--region=us-central1-a']
+    args: ['deploy', 'apply', '--file=prod-target.yaml', '--region=us-central1']
 
   # Step 4: Deploy to Cloud Deploy pipeline
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
