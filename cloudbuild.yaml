@@ -1,0 +1,36 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/regal-scholar-423322-h0/gemini-app:latest', '.']
+    
+
+  # Step 2: Push the Docker image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/regal-scholar-423322-h0/gemini-app:latest']
+
+
+  # Step 3: Apply the Cloud Deploy configurations
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['deploy', 'apply', '--file=clouddeploy.yaml', '--region=us-central1-a']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['deploy', 'apply', '--file=dev-target.yaml', '--region=us-central1-a']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['deploy', 'apply', '--file=prod-target.yaml', '--region=us-central1-a']
+
+  # Step 4: Deploy to Cloud Deploy pipeline
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - >
+       gcloud deploy releases create release-$BUILD_ID
+       --delivery-pipeline=smart-hire-pipeline
+       --region=us-central1
+       --source=./
+       --images=gemini-app=gcr.io/regal-scholar-423322-h0/gemini-app:latest
+images:
+  - 'gcr.io/regal-scholar-423322-h0/gemini-app:latest'
+
+
+options:
+  logging: CLOUD_LOGGING_ONLY
