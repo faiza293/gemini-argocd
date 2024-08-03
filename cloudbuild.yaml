@@ -24,7 +24,7 @@ steps:
     - '-c'
     - >
        gcloud deploy releases create release-$BUILD_ID
-       --delivery-pipeline=smart-hire-pipeline
+       --delivery-pipeline=gen-ai-pipeline
        --region=us-central1
        --source=./
        --images=gemini-app=gcr.io/regal-scholar-423322-h0/gemini-app:latest
