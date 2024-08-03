@@ -1,7 +1,7 @@
 apiVersion: deploy.cloud.google.com/v1beta1
 kind: DeliveryPipeline
 metadata:
-  name: Gen-AI-pipeline
+  name: gen-aI-pipeline
   
 description: Delivery pipeline for Gen AI application
 serialPipeline:
