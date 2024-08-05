@@ -25,7 +25,7 @@ spec:
             - name: PORT
               value: "80"
             - name: API_KEY
-              value: "AIzaSyAM2gXjIhpYNGu3WNQsXKEy36DFecJIRVw"
+              value: "AIzaSyAl3St7kl3bJVpsFSnDQ-DDf8QAHbOgwUo"
 ---
 # Service for Development Namespace
 apiVersion: v1
@@ -69,7 +69,7 @@ spec:
             - name: PORT
               value: "80"
             - name: API_KEY
-              value: "AIzaSyAM2gXjIhpYNGu3WNQsXKEy36DFecJIRVw"
+              value: "AIzaSyAl3St7kl3bJVpsFSnDQ-DDf8QAHbOgwUo"
 ---
 # Service for Production Namespace
 apiVersion: v1
