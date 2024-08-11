@@ -2,9 +2,9 @@ import os
 from flask import Flask, render_template, request
 import requests
 
-app = Flask(__name__)
+app = Flask(__name__ ,template_folder='../frontend')
 
-API_KEY = "AIzaSyAl3St7kl3bJVpsFSnDQ-DDf8QAHbOgwUo"
+API_KEY = "AIzaSyCmaL1WQocecWWWWJBbWhfCITq6_Va80Z0"
 ENDPOINT_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + API_KEY
 
 def generate_text(prompt):
