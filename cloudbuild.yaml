@@ -3,8 +3,7 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:${_IMAGE_TAG}', 
+    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA',
     './frontend'
   ]
 
@@ -15,14 +14,12 @@ steps:
   - -c
   - |
     docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA
-    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:${_IMAGE_TAG}
 
 #### Building Backend Docker Image ####
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 
     '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:${_IMAGE_TAG}', 
     './backend'
   ]
 
@@ -33,7 +30,6 @@ steps:
   - -c
   - |
     docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA
-    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:${_IMAGE_TAG}
 
 # Update the Kubernetes manifests for frontend
 - name: 'gcr.io/cloud-builders/gcloud'
