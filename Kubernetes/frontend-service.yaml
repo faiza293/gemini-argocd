@@ -1,13 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: argoapp-service
+  name: frontend-service
   namespace: default
+  labels:
+    app: frontend-app
 spec:
   selector:
-    app: argo-app
+    app: frontend-app
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
   type: LoadBalancer

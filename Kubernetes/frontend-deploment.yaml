@@ -1,23 +1,22 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: argo-app
+  name: frontend-app
   namespace: default
   labels:
-    app: argo-app
+    app: frontend-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: argo-app
+      app: frontend-app
   template:
     metadata:
       labels:
-        app: argo-app
+        app: frontend-app
     spec:
       containers:
-      - name: argo-app
-        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/argo-app:main
+      - name: frontend-app
+        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/frontend-app:main
         ports:
         - containerPort: 8080
