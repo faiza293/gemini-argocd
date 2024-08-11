@@ -38,7 +38,7 @@ steps:
   args:
   - '-c'
   - |
-    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/build-argocd.git -b ${_CD_BRANCH}
+    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git -b ${_CD_BRANCH}
     echo "Updating frontend image tag version ..."
     cd Kubernetes
     sed -i "s#IMAGE_PLACEHOLDER#northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA#g" frontend-deployment.yaml
@@ -48,7 +48,7 @@ steps:
     git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
     git add frontend-deployment.yaml
     git commit -m "[Cloud Builder] Updated frontend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA from commit ${COMMIT_SHA}"
-    git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/build-argocd.git ${_CD_BRANCH}
+    git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
 
 # Update the Kubernetes manifests for backend
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -57,7 +57,7 @@ steps:
   args:
   - '-c'
   - |
-    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/build-argocd.git -b ${_CD_BRANCH}
+    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git -b ${_CD_BRANCH}
     echo "Updating backend image tag version ..."
     cd Kubernetes
     sed -i "s#IMAGE_PLACEHOLDER#northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA#g" backend-deployment.yaml
@@ -67,7 +67,7 @@ steps:
     git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
     git add backend-deployment.yaml
     git commit -m "[Cloud Builder] Updated backend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA from commit ${COMMIT_SHA}"
-    git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/build-argocd.git ${_CD_BRANCH}
+    git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
 
 availableSecrets:
   secretManager:
