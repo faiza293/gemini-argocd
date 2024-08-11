@@ -3,7 +3,7 @@ FROM nginx:alpine
 
 # Copy the index.html and other static files to the nginx html directory
 COPY index.html /usr/share/nginx/html/index.html
-COPY static /usr/share/nginx/html/static
+
 
 # Expose port 8080 for the web server
 EXPOSE 8080
