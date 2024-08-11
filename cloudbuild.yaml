@@ -3,7 +3,7 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA',
+    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest',
     './frontend'
   ]
 
@@ -13,13 +13,13 @@ steps:
   args: 
   - -c
   - |
-    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA
+    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest
 
 #### Building Backend Docker Image ####
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA', 
+    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest', 
     './backend'
   ]
 
@@ -29,7 +29,7 @@ steps:
   args: 
   - -c
   - |
-    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA
+    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest
 
 # Update the Kubernetes manifests for frontend
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -41,13 +41,13 @@ steps:
     git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git -b ${_CD_BRANCH}
     echo "Updating frontend image tag version ..."
     cd Kubernetes
-    sed -i "s#IMAGE_PLACEHOLDER#northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA#g" frontend-deployment.yaml
+    sed -i "s#IMAGE_PLACEHOLDER#northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest#g" frontend-deployment.yaml
     echo "Pushing changes to k8s manifest repo ..."
     git config --global user.name "faiza mukve"
     git config --global user.email "faizafaazmukve@gmail.com"
     git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
     git add frontend-deployment.yaml
-    git commit -m "[Cloud Builder] Updated frontend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA from commit ${COMMIT_SHA}"
+    git commit -m "[Cloud Builder] Updated frontend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest from commit ${COMMIT_SHA}"
     git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
 
 # Update the Kubernetes manifests for backend
@@ -60,13 +60,13 @@ steps:
     git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git -b ${_CD_BRANCH}
     echo "Updating backend image tag version ..."
     cd Kubernetes
-    sed -i "s#IMAGE_PLACEHOLDER#northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA#g" backend-deployment.yaml
+    sed -i "s#IMAGE_PLACEHOLDER#northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest#g" backend-deployment.yaml
     echo "Pushing changes to k8s manifest repo ..."
     git config --global user.name "faiza mukve"
     git config --global user.email "faizafaazmukve@gmail.com"
     git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
     git add backend-deployment.yaml
-    git commit -m "[Cloud Builder] Updated backend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA from commit ${COMMIT_SHA}"
+    git commit -m "[Cloud Builder] Updated backend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest from commit ${COMMIT_SHA}"
     git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
 
 availableSecrets:

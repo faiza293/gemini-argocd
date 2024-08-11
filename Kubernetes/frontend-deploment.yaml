@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: frontend-app
-        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/frontend-app:$SHORT_SHA
+        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/frontend-app:latest
         ports:
         - containerPort: 8080
