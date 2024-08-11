@@ -1,36 +1,41 @@
+#### Building Docker Image ####
 steps:
-  # Step 1: Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/regal-scholar-423322-h0/gemini-app:latest', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/argo-app:$SHORT_SHA', '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/argo-app:${_IMAGE_TAG}', '.' ]
+
+#### Pushing Docker Image #### Regional
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: /bin/sh
+  args: 
+  - -c
+  - |
+    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/argo-app:$SHORT_SHA
+    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/argo-app:${_IMAGE_TAG}
+
+# This step generates the new manifest
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: /bin/sh
+  secretEnv: ['GIT_ACCESS_TOKEN']
+  args:
+  - '-c'
+  - |
+    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/build-argocd.git -b ${_CD_BRANCH}
+    echo "Updating image tag version ..."
+    cd springapp-deployment
+    sed "s/GOOGLE_CLOUD_PROJECT/$PROJECT_ID/g" deployment.yaml | \
+    sed "s/COMMIT_SHA/${SHORT_SHA}/g" > deployment.yaml
+    echo "Pushing changes to k8s manifest repo ..."
+    git config --global user.name "faiza mukve"
+    git config --global user.email "faizafaazmukve@gmail.com"
+    git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
+    git add -A
+    git commit -m "[Cloud Builder] Updated image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/argo-app:$SHORT_SHA from commit ${COMMIT_SHA}"
+    git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/build-argocd.git ${_CD_BRANCH}
     
-
-  # Step 2: Push the Docker image to Google Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/regal-scholar-423322-h0/gemini-app:latest']
-
-
-  # Step 3: Apply the Cloud Deploy configurations
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['deploy', 'apply', '--file=clouddeploy.yaml', '--region=us-central1']
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['deploy', 'apply', '--file=dev-target.yaml', '--region=us-central1']
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['deploy', 'apply', '--file=prod-target.yaml', '--region=us-central1']
-
-  # Step 4: Deploy to Cloud Deploy pipeline
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - >
-       gcloud deploy releases create release-$BUILD_ID
-       --delivery-pipeline=gen-ai-pipeline
-       --region=us-central1
-       --source=./
-       --images=gemini-app=gcr.io/regal-scholar-423322-h0/gemini-app:latest
-images:
-  - 'gcr.io/regal-scholar-423322-h0/gemini-app:latest'
-
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_NUMBER/secrets/GIT_ACCESS_TOKEN/versions/latest
+    env: 'GIT_ACCESS_TOKEN'
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+  logging: CLOUD_LOGGING_ONLY   # logging
