@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: backend-app
-        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/backend-app:main
+        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/backend-app:$SHORT_SHA'
         ports:
         - containerPort: 8080
