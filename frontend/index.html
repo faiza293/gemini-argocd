@@ -52,7 +52,7 @@
             border-radius: 10px;
             font-size: 16px;
             resize: vertical;
-            transition: 
+            transition: background-color 0.3s ease, transform 0.3s ease;
             font-family: 'Baloo 2', cursive;
         }
 
@@ -156,19 +156,43 @@
 <body>
     <div class="container">
         <h1>Welcome to Gemini</h1>
-        <form method="post" action="/generate" id="textForm">
-            <label for="prompt">Hit a Query</label>
+        <form id="textForm">
+            <label for="prompt">Enter a Query</label>
             <textarea id="prompt" name="prompt" rows="4" required></textarea>
             <button type="submit">Generate</button>
         </form>
 
-        {% if generated_text %}
-        <div class="generated-text">
+        <div id="generatedTextContainer" class="generated-text" style="display:none;">
             <h2>AI Response</h2>
-            <p>{{ generated_text }}</p>
+            <p id="generatedText"></p>
         </div>
-        {% endif %}
     </div>
+
+    <script>
+        document.getElementById('textForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const prompt = document.getElementById('prompt').value;
+
+            fetch('http://34.130.42.227:8080/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('generatedText').textContent = data.generated_text || 'No text generated';
+                document.getElementById('generatedTextContainer').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('generatedText').textContent = 'Error: Unable to generate text';
+                document.getElementById('generatedTextContainer').style.display = 'block';
+            });
+        });
+    </script>
 </body>
 
 </html>
