@@ -44,16 +44,15 @@ steps:
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=northamerica-northeast2-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=argocd-demo'
-  args: ['apply', '-f', 'frontend-deployment.yaml']
-  dir: '/home/ashwathynairofficial/gemini-argocd/Kubernetes'
+  args: ['apply', '-f', 'Kubernetes/frontend-deployment.yaml']
 
 # Apply Kubernetes manifests to update backend deployments
 - name: 'gcr.io/cloud-builders/kubectl'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=northamerica-northeast2-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=argocd-demo'
-  args: ['apply', '-f', 'backend-deployment.yaml']
-  dir: '/home/ashwathynairofficial/gemini-argocd/Kubernetes'
+  args: ['apply', '-f', 'Kubernetes/backend-deployment.yaml']
+
 
 # Update the Kubernetes manifests for frontend
 - name: 'gcr.io/cloud-builders/gcloud'
