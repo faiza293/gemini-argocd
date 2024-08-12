@@ -1,99 +1,57 @@
-#### Building Frontend Docker Image ####
+#### Build Frontend Docker Image ####
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [
-    'build', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest',
+    'build',
+    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA',
     './frontend'
   ]
 
-#### Pushing Frontend Docker Image #### Regional
-- name: 'gcr.io/cloud-builders/docker'
-  entrypoint: /bin/sh
-  args: 
-  - -c
-  - |
-    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest
-
-#### Building Backend Docker Image ####
+#### Push Frontend Docker Image ####
 - name: 'gcr.io/cloud-builders/docker'
   args: [
-    'build', 
-    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest', 
+    'push',
+    'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA'
+  ]
+
+#### Build Backend Docker Image ####
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA',
     './backend'
   ]
 
-#### Pushing Backend Docker Image #### Regional
+#### Push Backend Docker Image ####
 - name: 'gcr.io/cloud-builders/docker'
-  entrypoint: /bin/sh
-  args: 
-  - -c
-  - |
-    docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest
+  args: [
+    'push',
+    'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA'
+  ]
 
-# # Set the Kubernetes context
-# - name: 'gcr.io/cloud-builders/gcloud'
-#   args: 
-#     [
-#       'container', 'clusters', 'get-credentials', 'argocd-demo', 
-#       '--zone', 'northamerica-northeast2-a', 
-#       '--project', 'argocd-demo-432200'
-#     ]
-# # Apply Kubernetes manifests to update frontend deployments
-# - name: 'gcr.io/cloud-builders/kubectl'
-#   env:
-#   - 'CLOUDSDK_COMPUTE_ZONE=northamerica-northeast2-a'
-#   - 'CLOUDSDK_CONTAINER_CLUSTER=argocd-demo'
-#   args: ['apply', '-f', 'Kubernetes/frontend-deployment.yaml']
-
-# # Apply Kubernetes manifests to update backend deployments
-# - name: 'gcr.io/cloud-builders/kubectl'
-#   env:
-#   - 'CLOUDSDK_COMPUTE_ZONE=northamerica-northeast2-a'
-#   - 'CLOUDSDK_CONTAINER_CLUSTER=argocd-demo'
-#   args: ['apply', '-f', 'Kubernetes/backend-deployment.yaml']
-
-
-# Update the Kubernetes manifests for frontend
+#### Update and Push Kubernetes Manifests ####
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: /bin/sh
   secretEnv: ['GIT_ACCESS_TOKEN']
   args:
   - '-c'
   - |
-    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git -b ${_CD_BRANCH}
-    echo "Updating frontend image tag version ..."
-    cd frontend
-    sed "s/GOOGLE_CLOUD_PROJECT/$PROJECT_ID/g" frontend-deployment.yaml | \
-    sed "s/COMMIT_SHA/${SHORT_SHA}/g" > frontend-deployment.yaml
-    echo "Pushing changes to k8s manifest repo ..."
+    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git
+    cd gemini-argocd
+    git checkout ${_CD_BRANCH} || git checkout -b ${_CD_BRANCH}
+    
+    echo "Updating frontend deployment with new image tag..."
+    sed -i "s#image: .*#image: northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:$SHORT_SHA#g" frontend/frontend-deployment.yaml
+    
+    echo "Updating backend deployment with new image tag..."
+    sed -i "s#image: .*#image: northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:$SHORT_SHA#g" backend/backend-deployment.yaml
+    
+    echo "Committing and pushing updated Kubernetes manifests..."
     git config --global user.name "faiza mukve"
     git config --global user.email "faizafaazmukve@gmail.com"
-    git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
-    git add -A
-    git commit -m "[Cloud Builder] Updated frontend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest"
+    git add frontend/frontend-deployment.yaml backend/backend-deployment.yaml
+    git commit -m "[Cloud Builder] Updated frontend and backend image tags to $SHORT_SHA"
     git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
-
-# Update the Kubernetes manifests for backend
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: /bin/sh
-  secretEnv: ['GIT_ACCESS_TOKEN']
-  args:
-  - '-c'
-  - |
-    git clone https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git -b ${_CD_BRANCH}
-    echo "Updating backend image tag version ..."
-    cd backend
-    sed "s/GOOGLE_CLOUD_PROJECT/$PROJECT_ID/g" backend-deployment.yaml | \
-    sed "s/COMMIT_SHA/${SHORT_SHA}/g" > backend-deployment.yaml
-    echo "Pushing changes to k8s manifest repo ..."
-    git config --global user.name "faiza mukve"
-    git config --global user.email "faizafaazmukve@gmail.com"
-    git checkout -b ${_CD_BRANCH} # Ensures branch is correctly set locally
-    git add -A
-    git commit -m "[Cloud Builder] Updated backend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest"
-    git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
-
 
 availableSecrets:
   secretManager:
@@ -101,4 +59,4 @@ availableSecrets:
     env: 'GIT_ACCESS_TOKEN'
 
 options:
-  logging: CLOUD_LOGGING_ONLY   # logging
+  logging: CLOUD_LOGGING_ONLY
