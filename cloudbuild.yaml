@@ -69,6 +69,14 @@ steps:
     git commit -m "[Cloud Builder] Updated backend image tag northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest"
     git push https://faiza293:$$GIT_ACCESS_TOKEN@github.com/faiza293/gemini-argocd.git ${_CD_BRANCH}
 
+# Set the Kubernetes context
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: 
+    [
+      'container', 'clusters', 'get-credentials', 'argocd-demo', 
+      '--zone', 'northamerica-northeast2-a', 
+      '--project', 'argocd-demo-432200'
+    ]
 # Apply Kubernetes manifests to update deployments
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -78,7 +86,7 @@ steps:
   - '-f'
   - 'Kubernetes/backend-deployment.yaml'
 
-  
+
 availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_NUMBER/secrets/GIT_ACCESS_TOKEN/versions/latest
