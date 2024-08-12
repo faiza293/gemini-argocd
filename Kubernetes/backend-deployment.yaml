@@ -20,3 +20,6 @@ spec:
         image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/backend-app:latest
         ports:
         - containerPort: 8080
+        env:
+            - name: API_KEY
+              value: "AIzaSyCmaL1WQocecWWWWJBbWhfCITq6_Va80Z0"
