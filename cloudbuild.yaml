@@ -31,6 +31,24 @@ steps:
   - |
     docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest
 
+# Set the Kubernetes context
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: 
+    [
+      'container', 'clusters', 'get-credentials', 'argocd-demo', 
+      '--zone', 'northamerica-northeast2-a', 
+      '--project', 'argocd-demo-432200'
+    ]
+# Apply Kubernetes manifests to update frontend deployments
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'frontend-deployment.yaml', 'frontend-app=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest']
+  dir: '/home/ashwathynairofficial/gemini-argocd/Kubernetes'
+
+# Apply Kubernetes manifests to update backend deployments
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'backend-deployment.yaml', 'backend-app=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest']
+  dir: '/home/ashwathynairofficial/gemini-argocd/Kubernetes'
+
 # Update the Kubernetes manifests for frontend
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: /bin/sh
