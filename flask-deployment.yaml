@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: us-central1-docker.pkg.dev/stellar-horizon-429917-n5/gemini-app/flask-app:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/secrets/key.json"
+        volumeMounts:
+        - name: gcp-service-account
+          mountPath: /secrets
+          readOnly: true
+      volumes:
+      - name: gcp-service-account
+        secret:
+          secretName: gcp-service-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: flask-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
