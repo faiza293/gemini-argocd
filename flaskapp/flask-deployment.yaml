@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-app
+  name: backend-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flask-app
+      app: backend-app
   template:
     metadata:
       labels:
-        app: flask-app
+        app: backend-app
     spec:
       containers:
-      - name: flask-app
-        image: us-central1-docker.pkg.dev/stellar-horizon-429917-n5/gemini-app/flask-app:latest
+      - name: backend-app
+        image: northamerica-northeast2-docker.pkg.dev/argocd-demo-432200/argo-repo/backend-app:latest
         ports:
         - containerPort: 5000
         env:
@@ -32,11 +32,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask-app-service
+  name: backend-app-service
 spec:
   type: LoadBalancer
   selector:
-    app: flask-app
+    app: backend-app
   ports:
     - protocol: TCP
       port: 80

@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Gemini AI API details
-GEMINI_API_KEY = 'AIzaSyB9-9vqc7axPxc0YefWB_jFoNHuI8FQrgM'
+GEMINI_API_KEY = 'AAIzaSyCmaL1WQocecWWWWJBbWhfCITq6_Va80Z0'
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
 
 @app.route('/query', methods=['POST'])
