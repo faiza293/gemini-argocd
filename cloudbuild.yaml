@@ -77,15 +77,15 @@ steps:
       '--zone', 'northamerica-northeast2-a', 
       '--project', 'argocd-demo-432200'
     ]
-# Apply Kubernetes manifests to update deployments
+# Apply Kubernetes manifests to update frontend deployments
 - name: 'gcr.io/cloud-builders/kubectl'
-  args:
-  - 'apply'
-  - '-f'
-  - 'Kubernetes/frontend-deployment.yaml'
-  - '-f'
-  - 'Kubernetes/backend-deployment.yaml'
+  args: ['apply', '-f', 'frontend-deployment.yaml', 'frontend-app=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/frontend-app:latest']
+  dir: '/home/ashwathynairofficial/gemini-argocd/Kubernetes'
 
+# Apply Kubernetes manifests to update backend deployments
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'backend-deployment.yaml', 'backend-app=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPO}/backend-app:latest']
+  dir: '/home/ashwathynairofficial/gemini-argocd/Kubernetes'
 
 availableSecrets:
   secretManager:
